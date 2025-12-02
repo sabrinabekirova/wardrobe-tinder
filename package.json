@@ -1,0 +1,10 @@
+{
+  "name": "wardrobe-tinder-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "npm --prefix Frontend run dev",
+    "dev:backend": "npm --prefix Backend start",
+    "build": "npm --prefix Frontend run build"
+  }
+}
