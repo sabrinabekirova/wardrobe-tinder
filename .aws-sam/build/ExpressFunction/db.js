@@ -3,13 +3,14 @@ import mysql from 'mysql2/promise';
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'app',
-  password: 'app',
+  password: 'app', // TODO: move to environment variables
   database: 'app',
   waitForConnections: true,
   connectionLimit: 10
 });
 
-async function initDB() { // Initialize database tables if they don't exist
+// Initialize tables
+async function initDB() {
   const connection = await pool.getConnection();
   try {
     await connection.query(`

@@ -10,6 +10,7 @@ import logger from 'morgan';
 import session from 'express-session';
 import passport, { configurePassport } from './config/passport.js';
 
+// Configure passport AFTER dotenv has loaded
 configurePassport();
 
 import indexRouter from './routes/index.js';
