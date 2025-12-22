@@ -15,7 +15,7 @@ function Wardrobe_view({ tops, bottoms, accessories, others }) {
   };
 
   const filter_items = (items) => {
-    return items.filter((item) => {
+    return items.filter(function(item) {
       const search_term_lowercase = search_term.toLowerCase();
       const item_title_lowercase = item.title.toLowerCase();
       const matches_search = item_title_lowercase.includes(search_term_lowercase);
@@ -35,10 +35,10 @@ function Wardrobe_view({ tops, bottoms, accessories, others }) {
     { value: 'others', label: 'Others' }
   ];
 
-  const should_show_tops = category_filter === 'all' || category_filter === 'tops';
-  const should_show_bottoms = category_filter === 'all' || category_filter === 'bottoms';
-  const should_show_accessories = category_filter === 'all' || category_filter === 'accessories';
-  const should_show_others = category_filter === 'all' || category_filter === 'others';
+  const should_show_tops = (category_filter === 'all' || category_filter === 'tops');
+  const should_show_bottoms = (category_filter === 'all' || category_filter === 'bottoms');
+  const should_show_accessories = (category_filter === 'all' || category_filter === 'accessories');
+  const should_show_others = (category_filter === 'all' || category_filter === 'others');
 
   return (
     <div>
@@ -50,46 +50,46 @@ function Wardrobe_view({ tops, bottoms, accessories, others }) {
       />
       
       <div className="wardrobe-sections">
-        {should_show_tops === true && (
+        {should_show_tops && (
           <section className="wardrobe-section">
             <h2 className="section-title">Tops</h2>
             <div className="card-grid">
-              {filtered_tops.map((item) => (
-                <CardComponent key={item.id} image={item.image_url} description={item.title} />
-              ))}
+              {filtered_tops.map(function(item) {
+                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+              })}
             </div>
           </section>
         )}
 
-        {should_show_bottoms === true && (
+        {should_show_bottoms && (
           <section className="wardrobe-section">
             <h2 className="section-title">Bottoms</h2>
             <div className="card-grid">
-              {filtered_bottoms.map((item) => (
-                <CardComponent key={item.id} image={item.image_url} description={item.title} />
-              ))}
+              {filtered_bottoms.map(function(item) {
+                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+              })}
             </div>
           </section>
         )}
 
-        {should_show_accessories === true && (
+        {should_show_accessories && (
           <section className="wardrobe-section">
             <h2 className="section-title">Accessories</h2>
             <div className="card-grid">
-              {filtered_accessories.map((item) => (
-                <CardComponent key={item.id} image={item.image_url} description={item.title} />
-              ))}
+              {filtered_accessories.map(function(item) {
+                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+              })}
             </div>
           </section>
         )}
 
-        {should_show_others === true && (
+        {should_show_others && (
           <section className="wardrobe-section">
             <h2 className="section-title">Others</h2>
             <div className="card-grid">
-              {filtered_others.map((item) => (
-                <CardComponent key={item.id} image={item.image_url} description={item.title} />
-              ))}
+              {filtered_others.map(function(item) {
+                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+              })}
             </div>
           </section>
         )}

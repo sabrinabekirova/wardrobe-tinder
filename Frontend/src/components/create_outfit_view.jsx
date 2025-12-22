@@ -10,104 +10,149 @@ function Create_outfit_view({ tops, bottoms, accessories, others, on_save }) {
   const [selected_categories, set_selected_categories] = useState(['top', 'bottom', 'accessory']);
 
   const next_top = () => {
-    if (top_index < tops.length - 1) {
-      set_top_index(top_index + 1);
-    } else {
+    const new_index = top_index + 1;
+    if (new_index >= tops.length) {
       set_top_index(0);
+    } else {
+      set_top_index(new_index);
     }
   };
 
   const prev_top = () => {
-    if (top_index > 0) {
-      set_top_index(top_index - 1);
-    } else {
+    const new_index = top_index - 1;
+    if (new_index < 0) {
       set_top_index(tops.length - 1);
+    } else {
+      set_top_index(new_index);
     }
   };
 
   const next_bottom = () => {
-    if (bottom_index < bottoms.length - 1) {
-      set_bottom_index(bottom_index + 1);
-    } else {
+    const new_index = bottom_index + 1;
+    if (new_index >= bottoms.length) {
       set_bottom_index(0);
+    } else {
+      set_bottom_index(new_index);
     }
   };
 
   const prev_bottom = () => {
-    if (bottom_index > 0) {
-      set_bottom_index(bottom_index - 1);
-    } else {
+    const new_index = bottom_index - 1;
+    if (new_index < 0) {
       set_bottom_index(bottoms.length - 1);
+    } else {
+      set_bottom_index(new_index);
     }
   };
 
   const next_accessory = () => {
-    if (accessory_index < accessories.length - 1) {
-      set_accessory_index(accessory_index + 1);
-    } else {
+    const new_index = accessory_index + 1;
+    if (new_index >= accessories.length) {
       set_accessory_index(0);
+    } else {
+      set_accessory_index(new_index);
     }
   };
 
   const prev_accessory = () => {
-    if (accessory_index > 0) {
-      set_accessory_index(accessory_index - 1);
-    } else {
+    const new_index = accessory_index - 1;
+    if (new_index < 0) {
       set_accessory_index(accessories.length - 1);
+    } else {
+      set_accessory_index(new_index);
     }
   };
 
   const next_other = () => {
-    if (other_index < others.length - 1) {
-      set_other_index(other_index + 1);
-    } else {
+    const new_index = other_index + 1;
+    if (new_index >= others.length) {
       set_other_index(0);
+    } else {
+      set_other_index(new_index);
     }
   };
 
   const prev_other = () => {
-    if (other_index > 0) {
-      set_other_index(other_index - 1);
-    } else {
+    const new_index = other_index - 1;
+    if (new_index < 0) {
       set_other_index(others.length - 1);
+    } else {
+      set_other_index(new_index);
     }
   };
 
   const toggle_category = (category) => {
-    if (selected_categories.includes(category)) {
-      const new_categories = selected_categories.filter(c => c !== category);
+    const is_selected = selected_categories.includes(category);
+    
+    if (is_selected) {
+      const new_categories = selected_categories.filter(function(c) {
+        return c !== category;
+      });
+      
       if (new_categories.length >= 2) {
         set_selected_categories(new_categories);
       } else {
         alert('You must select at least 2 categories');
       }
     } else {
-      set_selected_categories([...selected_categories, category]);
+      const new_categories = selected_categories.concat(category);
+      set_selected_categories(new_categories);
     }
   };
 
   const handle_save = () => {
-    if (outfit_name === '') {
-      alert('Please enter an outfit name');
-      return;
-    }
-
     if (selected_categories.length < 2) {
       alert('Please select at least 2 categories');
       return;
     }
 
-    const current_top = selected_categories.includes('top') ? tops[top_index] : null;
-    const current_bottom = selected_categories.includes('bottom') ? bottoms[bottom_index] : null;
-    const current_accessory = selected_categories.includes('accessory') ? accessories[accessory_index] : null;
-    const current_other = selected_categories.includes('other') ? others[other_index] : null;
+    if (outfit_name === '') {
+      alert('Please enter an outfit name');
+      return;
+    }
+
+    let current_top = null;
+    if (selected_categories.includes('top')) {
+      current_top = tops[top_index];
+    }
+    let top_id = null;
+    if (current_top) {
+      top_id = current_top.id;
+    }
+    
+    let current_bottom = null;
+    if (selected_categories.includes('bottom')) {
+      current_bottom = bottoms[bottom_index];
+    }
+    let bottom_id = null;
+    if (current_bottom) {
+      bottom_id = current_bottom.id;
+    }
+    
+    let current_accessory = null;
+    if (selected_categories.includes('accessory')) {
+      current_accessory = accessories[accessory_index];
+    }
+    let accessory_id = null;
+    if (current_accessory) {
+      accessory_id = current_accessory.id;
+    }
+    
+    let current_other = null;
+    if (selected_categories.includes('other')) {
+      current_other = others[other_index];
+    }
+    let other_id = null;
+    if (current_other) {
+      other_id = current_other.id;
+    }
 
     on_save({
       name: outfit_name,
-      top_id: current_top ? current_top.id : null,
-      bottom_id: current_bottom ? current_bottom.id : null,
-      accessory_id: current_accessory ? current_accessory.id : null,
-      other_id: current_other ? current_other.id : null
+      top_id: top_id,
+      bottom_id: bottom_id,
+      accessory_id: accessory_id,
+      other_id: other_id
     });
 
     set_outfit_name('');

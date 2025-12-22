@@ -3,21 +3,16 @@ import db from '../db.js';
 
 const router = express.Router();
 
-// Authentication middleware - checks if user is logged in
 const require_auth = (req, res, next) => {
-  const is_logged_in = req.isAuthenticated();
-  
-  if (is_logged_in === true) {
+  if (req.isAuthenticated()) {
     next();
   } else {
     res.status(401).json({ error: 'Not authenticated' });
   }
 };
 
-// Apply auth to all routes
 router.use(require_auth);
 
-// Get all outfits for user
 router.get('/', async (req, res) => {
   try {
     const sql = `
@@ -32,16 +27,19 @@ router.get('/', async (req, res) => {
       WHERE o.user_id = ?
     `;
 
-    const [outfits] = await db.query(sql, [req.user.id]);
+    const query_result = await db.query(sql, [req.user.id]);
+    const outfits = query_result[0];
     res.json({ success: true, data: outfits });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Create outfit
 router.post('/', async (req, res) => {
-  const { name, top_id, bottom_id, accessory_id } = req.body;
+  const name = req.body.name;
+  const top_id = req.body.top_id;
+  const bottom_id = req.body.bottom_id;
+  const accessory_id = req.body.accessory_id;
 
   try {
     if (!name) {
@@ -52,29 +50,29 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'At least one item must be selected' });
     }
 
-    const final_top_id = top_id ? top_id : null;
-    const final_bottom_id = bottom_id ? bottom_id : null;
-    const final_accessory_id = accessory_id ? accessory_id : null;
+    const final_top_id = top_id || null;
+    const final_bottom_id = bottom_id || null;
+    const final_accessory_id = accessory_id || null;
 
-    const [result] = await db.query(
+    const query_result = await db.query(
       'INSERT INTO outfits (user_id, name, top_id, bottom_id, accessory_id) VALUES (?, ?, ?, ?, ?)',
       [req.user.id, name, final_top_id, final_bottom_id, final_accessory_id]
     );
+    const result = query_result[0];
 
     res.json({
       success: true,
       id: result.insertId,
-      name,
-      top_id,
-      bottom_id,
-      accessory_id
+      name: name,
+      top_id: top_id,
+      bottom_id: bottom_id,
+      accessory_id: accessory_id
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Delete outfit
 router.delete('/:id', async (req, res) => {
   try {
     await db.query('DELETE FROM outfits WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);

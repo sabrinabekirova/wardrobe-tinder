@@ -3,9 +3,9 @@ import '../styles/components/search_filter.css';
 import filter_icon from '../assets/icons/bars-filter-svgrepo-com.svg';
 
 function Search_filter({ on_search_change, on_filter_change, filter_options = [], placeholder = "Search..." }) {
+  const [is_filter_open, set_is_filter_open] = useState(false);
   const [search_term, set_search_term] = useState('');
   const [selected_filter, set_selected_filter] = useState('all');
-  const [is_filter_open, set_is_filter_open] = useState(false);
 
   const handle_search_change = (event) => {
     const new_search_value = event.target.value;
@@ -28,8 +28,8 @@ function Search_filter({ on_search_change, on_filter_change, filter_options = []
     on_search_change('');
   };
 
-  const has_search_term = search_term !== '';
-  const has_filter_options = filter_options.length > 0;
+  const has_search_term = (search_term !== '');
+  const has_filter_options = (filter_options.length > 0);
 
   return (
     <div className="search_filter_container">
@@ -41,14 +41,14 @@ function Search_filter({ on_search_change, on_filter_change, filter_options = []
           value={search_term}
           onChange={handle_search_change}
         />
-        {has_search_term === true && (
+        {has_search_term && (
           <button className="clear_btn" onClick={clear_search}>
             ×
           </button>
         )}
       </div>
 
-      {has_filter_options === true && (
+      {has_filter_options && (
         <div className="filter_box">
           <img 
             src={filter_icon} 
@@ -56,7 +56,7 @@ function Search_filter({ on_search_change, on_filter_change, filter_options = []
             className="filter_icon" 
             onClick={toggle_filter}
           />
-          {is_filter_open === true && (
+          {is_filter_open && (
             <div className="filter_dropdown">
               <button 
                 className={`filter_option ${selected_filter === 'all' ? 'active' : ''}`}
@@ -64,15 +64,22 @@ function Search_filter({ on_search_change, on_filter_change, filter_options = []
               >
                 All
               </button>
-              {filter_options.map((option) => (
-                <button 
-                  key={option.value}
-                  className={`filter_option ${selected_filter === option.value ? 'active' : ''}`}
-                  onClick={() => handle_filter_change(option.value)}
-                >
-                  {option.label}
-                </button>
-              ))}
+              {filter_options.map(function(option) {
+                let class_name = 'filter_option';
+                if (selected_filter === option.value) {
+                  class_name = 'filter_option active';
+                }
+                
+                return (
+                  <button 
+                    key={option.value}
+                    className={class_name}
+                    onClick={() => handle_filter_change(option.value)}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

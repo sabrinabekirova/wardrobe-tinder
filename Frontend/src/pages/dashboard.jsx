@@ -6,13 +6,13 @@ import Add_item_modal from '../components/add_item_modal';
 import '../styles/pages/dashboard.css';
 
 function Dashboard_page() {
-  const [current_view, set_current_view] = useState('wardrobe');
-  const [is_modal_open, set_is_modal_open] = useState(false);
-  const [user_name, set_user_name] = useState('');
   const [tops, set_tops] = useState([]);
   const [bottoms, set_bottoms] = useState([]);
+  const [current_view, set_current_view] = useState('wardrobe');
   const [accessories, set_accessories] = useState([]);
+  const [is_modal_open, set_is_modal_open] = useState(false);
   const [others, set_others] = useState([]);
+  const [user_name, set_user_name] = useState('');
   const [outfits, set_outfits] = useState([]);
 
   useEffect(() => {
@@ -29,40 +29,35 @@ function Dashboard_page() {
       credentials: 'include'
     });
     const data = await res.json();
-    set_user_name(data.name);
+    if (data.name) {
+      set_user_name(data.name);
+    }
   };
 
   const fetch_items = async () => {
-    // Fetch tops
     const res_tops = await fetch('http://localhost:3000/items?category=top', { credentials: 'include' });
     const data_tops = await res_tops.json();
     const tops_array = data_tops.data;
     set_tops(tops_array);
 
-    // Fetch bottoms
     const res_bottoms = await fetch('http://localhost:3000/items?category=bottom', { credentials: 'include' });
     const data_bottoms = await res_bottoms.json();
-    const bottoms_array = data_bottoms.data;
-    set_bottoms(bottoms_array);
+    set_bottoms(data_bottoms.data);
 
-    // Fetch accessories
     const res_accessories = await fetch('http://localhost:3000/items?category=accessory', { credentials: 'include' });
     const data_accessories = await res_accessories.json();
     const accessories_array = data_accessories.data;
     set_accessories(accessories_array);
 
-    // Fetch others
     const res_others = await fetch('http://localhost:3000/items?category=other', { credentials: 'include' });
     const data_others = await res_others.json();
-    const others_array = data_others.data;
-    set_others(others_array);
+    set_others(data_others.data);
   };
 
   const fetch_outfits = async () => {
     const res = await fetch('http://localhost:3000/outfits', { credentials: 'include' });
     const data = await res.json();
-    const outfits_array = data.data;
-    set_outfits(outfits_array);
+    set_outfits(data.data);
   };
 
   const handle_close_modal = () => {
@@ -75,23 +70,20 @@ function Dashboard_page() {
   };
 
   const handle_save_outfit = async (outfit_data) => {
-    const outfit_json = JSON.stringify(outfit_data);
-    
     const res = await fetch('http://localhost:3000/outfits', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: outfit_json
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(outfit_data)
     });
 
-    if (res.ok === true) {
+    if (res.ok) {
       alert('Outfit saved!');
       set_current_view('wardrobe');
     } else {
       const data = await res.json();
-      const error_message = data.error;
-      if (error_message !== null && error_message !== undefined) {
-        alert(error_message);
+      if (data.error) {
+        alert(data.error);
       } else {
         alert('Failed to save outfit');
       }
@@ -117,10 +109,16 @@ function Dashboard_page() {
   };
 
   const get_page_title = () => {
-    if (current_view === 'wardrobe') return `${user_name}'s Wardrobe`;
-    if (current_view === 'create') return 'Create Outfit';
-    if (current_view === 'outfits') return 'Saved Outfits';
-    return `${user_name}'s Wardrobe`;
+    if (current_view === 'wardrobe') {
+      return user_name + "'s Wardrobe";
+    }
+    if (current_view === 'create') {
+      return 'Create Outfit';
+    }
+    if (current_view === 'outfits') {
+      return 'Saved Outfits';
+    }
+    return user_name + "'s Wardrobe";
   };
 
   return (

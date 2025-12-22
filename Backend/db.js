@@ -9,10 +9,9 @@ const pool = mysql.createPool({
   connectionLimit: 10
 });
 
-async function init_db() { // Initialize database tables if they don't exist
+async function init_db() {
   const connection = await pool.getConnection();
   try {
-    // Drop old tables first
     await connection.query('DROP TABLE IF EXISTS outfits');
     await connection.query('DROP TABLE IF EXISTS items');
     await connection.query('DROP TABLE IF EXISTS users');
@@ -52,9 +51,7 @@ async function init_db() { // Initialize database tables if they don't exist
       )
     `);
     
-    console.log('Database tables initialized');
   } catch (error) {
-    console.error('Database init error:', error);
   } finally {
     connection.release();
   }
