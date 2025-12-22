@@ -3,6 +3,7 @@ import Wardrobe_view from '../components/wardrobe_view';
 import Create_outfit_view from '../components/create_outfit_view';
 import Saved_outfits_view from '../components/saved_outfits_view';
 import Add_item_modal from '../components/add_item_modal';
+import Delete_confirm_modal from '../components/delete_confirm_modal';
 import '../styles/pages/dashboard.css';
 
 function Dashboard_page() {
@@ -14,6 +15,8 @@ function Dashboard_page() {
   const [others, set_others] = useState([]);
   const [user_name, set_user_name] = useState('');
   const [outfits, set_outfits] = useState([]);
+  const [delete_item, set_delete_item] = useState(null);
+  const [delete_outfit, set_delete_outfit] = useState(null);
 
   useEffect(() => {
     fetch_user();
@@ -78,8 +81,7 @@ function Dashboard_page() {
     });
 
     if (res.ok) {
-      alert('Outfit saved!');
-      set_current_view('wardrobe');
+      set_current_view('outfits');
     } else {
       const data = await res.json();
       if (data.error) {
@@ -90,12 +92,7 @@ function Dashboard_page() {
     }
   };
 
-  const handle_delete_outfit = async (outfit_id) => {
-    const confirm_delete = confirm('Delete this outfit?');
-    if (!confirm_delete) {
-      return;
-    }
-
+  const handle_delete_outfit_confirm = async (outfit_id) => {
     const res = await fetch('http://localhost:3000/outfits/' + outfit_id, {
       method: 'DELETE',
       credentials: 'include'
@@ -103,8 +100,17 @@ function Dashboard_page() {
 
     if (res.ok) {
       fetch_outfits();
-    } else {
-      alert('Failed to delete outfit');
+    }
+  };
+
+  const handle_delete_item = async (item_id) => {
+    const res = await fetch('http://localhost:3000/items/' + item_id, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+
+    if (res.ok) {
+      fetch_items();
     }
   };
 
@@ -156,7 +162,13 @@ function Dashboard_page() {
       </div>
 
       {current_view === 'wardrobe' && (
-        <Wardrobe_view tops={tops} bottoms={bottoms} accessories={accessories} others={others} />
+        <Wardrobe_view 
+          tops={tops} 
+          bottoms={bottoms} 
+          accessories={accessories} 
+          others={others}
+          on_delete={set_delete_item}
+        />
       )}
       
       {current_view === 'create' && (
@@ -170,10 +182,24 @@ function Dashboard_page() {
       )}
       
       {current_view === 'outfits' && (
-        <Saved_outfits_view outfits={outfits} on_delete={handle_delete_outfit} />
+        <Saved_outfits_view outfits={outfits} on_delete={set_delete_outfit} />
       )}
 
       <Add_item_modal is_open={is_modal_open} on_close={handle_close_modal} />
+      
+      <Delete_confirm_modal 
+        is_open={delete_item !== null} 
+        item={delete_item} 
+        on_close={() => set_delete_item(null)}
+        on_confirm={handle_delete_item}
+      />
+      
+      <Delete_confirm_modal 
+        is_open={delete_outfit !== null} 
+        item={delete_outfit ? { id: delete_outfit.id, title: delete_outfit.name } : null} 
+        on_close={() => set_delete_outfit(null)}
+        on_confirm={handle_delete_outfit_confirm}
+      />
     </div>
   );
 }

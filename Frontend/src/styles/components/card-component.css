@@ -8,11 +8,11 @@
     cursor: pointer;
     transition: all 0.3s ease;
     overflow: hidden;
+    position: relative;
 }
 
 .clothing-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.15);
 }
 
@@ -37,4 +37,34 @@
     text-align: center;
     margin: 0;
     font-weight: 500;
+}
+
+.card-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.clothing-card:hover .card-actions {
+    opacity: 1;
+}
+
+.card-action-btn {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.card-action-btn:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.7));
 }

@@ -18,7 +18,7 @@ const require_auth = (req, res, next) => {
 
 router.use(require_auth);
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res) => { //get all saved items for the authenticated user
   try {
     const category = req.query.category;
     let sql = 'SELECT * FROM items WHERE user_id = ?';
@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
     const image_parts = image_url.split(',');
     const base64_data = image_parts[1];
     
-    if (!base64_data) {
+    if (!base64_data) { //
       return res.status(400).json({ error: 'Invalid image format' });
     }
 
@@ -70,7 +70,7 @@ router.post('/', async (req, res) => {
 
     const bucket = process.env.AWS_S3_UPLOADS_BUCKET;
     const region = process.env.AWS_REGION;
-    const saved_url = 'https://' + bucket + '.s3.' + region + '.amazonaws.com/' + filename;
+    const saved_url = 'https://' + bucket + '.s3.' + region + '.amazonaws.com/' + filename; //
 
     const query_result = await db.query(
       'INSERT INTO items (user_id, image_url, title, category) VALUES (?, ?, ?, ?)',
@@ -90,6 +90,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+//delete fuctionality
 router.delete('/:id', async (req, res) => {
   try {
     await db.query('DELETE FROM items WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);

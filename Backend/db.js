@@ -44,10 +44,12 @@ async function init_db() {
         top_id INT,
         bottom_id INT,
         accessory_id INT,
+        other_id INT,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (top_id) REFERENCES items(id) ON DELETE SET NULL,
         FOREIGN KEY (bottom_id) REFERENCES items(id) ON DELETE SET NULL,
-        FOREIGN KEY (accessory_id) REFERENCES items(id) ON DELETE SET NULL
+        FOREIGN KEY (accessory_id) REFERENCES items(id) ON DELETE SET NULL,
+        FOREIGN KEY (other_id) REFERENCES items(id) ON DELETE SET NULL
       )
     `);
     

@@ -46,7 +46,11 @@ export function configurePassport() {
     try {
       const query_result = await db.query('SELECT * FROM users WHERE id = ?', [id]);
       const users = query_result[0];
-      done(null, users[0]);
+      if (users && users.length > 0) {
+        done(null, users[0]);
+      } else {
+        done(null, false);
+      }
     } catch (error) {
       done(error, null);
     }

@@ -29,7 +29,6 @@
     font-size: 16px;
     font-weight: 400;
     color: #fff;
-    cursor: pointer;
     transition: opacity 0.2s ease;
     margin-top: -180px;
 }
@@ -55,7 +54,6 @@
     font-size: 16px;
     font-weight: 600;
     color: #fff;
-    cursor: pointer;
     transition: all 0.3s ease;
     /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
 }

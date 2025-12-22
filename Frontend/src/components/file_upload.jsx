@@ -42,7 +42,6 @@ function FileUpload({ on_success }) {
         });
 
         if (response.ok) {
-          alert('Item uploaded successfully!');
           set_title('');
           set_file(null);
           set_preview(null);

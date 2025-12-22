@@ -16,14 +16,16 @@ router.use(require_auth);
 router.get('/', async (req, res) => {
   try {
     const sql = `
-      SELECT o.id, o.name, o.top_id, o.bottom_id, o.accessory_id,
+      SELECT o.id, o.name, o.top_id, o.bottom_id, o.accessory_id, o.other_id,
              t.image_url as top_image, t.title as top_title,
              b.image_url as bottom_image, b.title as bottom_title,
-             a.image_url as accessory_image, a.title as accessory_title
+             a.image_url as accessory_image, a.title as accessory_title,
+             ot.image_url as other_image, ot.title as other_title
       FROM outfits o
       LEFT JOIN items t ON o.top_id = t.id
       LEFT JOIN items b ON o.bottom_id = b.id
       LEFT JOIN items a ON o.accessory_id = a.id
+      LEFT JOIN items ot ON o.other_id = ot.id
       WHERE o.user_id = ?
     `;
 
@@ -40,23 +42,25 @@ router.post('/', async (req, res) => {
   const top_id = req.body.top_id;
   const bottom_id = req.body.bottom_id;
   const accessory_id = req.body.accessory_id;
+  const other_id = req.body.other_id;
 
   try {
     if (!name) {
       return res.status(400).json({ error: 'Outfit name is required' });
     }
 
-    if (!top_id && !bottom_id && !accessory_id) {
+    if (!top_id && !bottom_id && !accessory_id && !other_id) {
       return res.status(400).json({ error: 'At least one item must be selected' });
     }
 
     const final_top_id = top_id || null;
     const final_bottom_id = bottom_id || null;
     const final_accessory_id = accessory_id || null;
+    const final_other_id = other_id || null;
 
     const query_result = await db.query(
-      'INSERT INTO outfits (user_id, name, top_id, bottom_id, accessory_id) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, name, final_top_id, final_bottom_id, final_accessory_id]
+      'INSERT INTO outfits (user_id, name, top_id, bottom_id, accessory_id, other_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [req.user.id, name, final_top_id, final_bottom_id, final_accessory_id, final_other_id]
     );
     const result = query_result[0];
 
@@ -66,7 +70,8 @@ router.post('/', async (req, res) => {
       name: name,
       top_id: top_id,
       bottom_id: bottom_id,
-      accessory_id: accessory_id
+      accessory_id: accessory_id,
+      other_id: other_id
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

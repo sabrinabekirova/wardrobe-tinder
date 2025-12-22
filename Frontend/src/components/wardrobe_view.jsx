@@ -2,7 +2,7 @@ import { useState } from 'react';
 import CardComponent from './card-component';
 import Search_filter from './search_filter';
 
-function Wardrobe_view({ tops, bottoms, accessories, others }) {
+function Wardrobe_view({ tops, bottoms, accessories, others, on_delete }) {
   const [search_term, set_search_term] = useState('');
   const [category_filter, set_category_filter] = useState('all');
 
@@ -55,7 +55,14 @@ function Wardrobe_view({ tops, bottoms, accessories, others }) {
             <h2 className="section-title">Tops</h2>
             <div className="card-grid">
               {filtered_tops.map(function(item) {
-                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+                return (
+                  <CardComponent 
+                    key={item.id} 
+                    image={item.image_url} 
+                    description={item.title}
+                    onDelete={() => on_delete(item)}
+                  />
+                );
               })}
             </div>
           </section>
@@ -66,7 +73,14 @@ function Wardrobe_view({ tops, bottoms, accessories, others }) {
             <h2 className="section-title">Bottoms</h2>
             <div className="card-grid">
               {filtered_bottoms.map(function(item) {
-                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+                return (
+                  <CardComponent 
+                    key={item.id} 
+                    image={item.image_url} 
+                    description={item.title}
+                    onDelete={() => on_delete(item)}
+                  />
+                );
               })}
             </div>
           </section>
@@ -77,7 +91,14 @@ function Wardrobe_view({ tops, bottoms, accessories, others }) {
             <h2 className="section-title">Accessories</h2>
             <div className="card-grid">
               {filtered_accessories.map(function(item) {
-                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+                return (
+                  <CardComponent 
+                    key={item.id} 
+                    image={item.image_url} 
+                    description={item.title}
+                    onDelete={() => on_delete(item)}
+                  />
+                );
               })}
             </div>
           </section>
@@ -88,7 +109,14 @@ function Wardrobe_view({ tops, bottoms, accessories, others }) {
             <h2 className="section-title">Others</h2>
             <div className="card-grid">
               {filtered_others.map(function(item) {
-                return <CardComponent key={item.id} image={item.image_url} description={item.title} />;
+                return (
+                  <CardComponent 
+                    key={item.id} 
+                    image={item.image_url} 
+                    description={item.title}
+                    onDelete={() => on_delete(item)}
+                  />
+                );
               })}
             </div>
           </section>
