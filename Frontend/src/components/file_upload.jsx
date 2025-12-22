@@ -17,18 +17,13 @@ function FileUpload({ on_success }) {
   const handle_submit = async (e) => {
     e.preventDefault();
     
-    if (!file || !title) {
-      alert('Please select a file and enter a title');
-      return;
-    }
 
-    const reader = new FileReader();
-    
+
+    const reader = new FileReader(); // to convert image to base64 for S3 upload
     reader.onload = async () => {
       try {
         const base64_image = reader.result;
-        
-        const response = await fetch('http://localhost:3000/items', {
+        const response = await fetch('http://localhost:3000/items',{
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -41,7 +36,7 @@ function FileUpload({ on_success }) {
           })
         });
 
-        if (response.ok) {
+        if (response.ok) { 
           set_title('');
           set_file(null);
           set_preview(null);
@@ -56,10 +51,12 @@ function FileUpload({ on_success }) {
       }
     };
     
-    reader.onerror = () => {
-      alert('Error reading file');
-    };
-    
+
+    if (!file || !title) {
+      alert('Please select a file and enter a title');
+      return;
+    }
+
     reader.readAsDataURL(file);
   };
 

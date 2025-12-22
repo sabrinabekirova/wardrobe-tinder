@@ -19,7 +19,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
+  border-radius: 9px;
   font-size: 14px;
   color: #fff;
   transition: all 0.3s ease;

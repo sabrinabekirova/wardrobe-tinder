@@ -2,7 +2,7 @@ import { useState } from 'react';
 import '../styles/components/search_filter.css';
 import filter_icon from '../assets/icons/bars-filter-svgrepo-com.svg';
 
-function Search_filter({ on_search_change, on_filter_change, filter_options = [], placeholder = "Search..." }) {
+function Search_filter({ on_search_change, on_filter_change, filter_options = [], placeholder = "Search" }) {
   const [is_filter_open, set_is_filter_open] = useState(false);
   const [search_term, set_search_term] = useState('');
   const [selected_filter, set_selected_filter] = useState('all');
@@ -41,11 +41,6 @@ function Search_filter({ on_search_change, on_filter_change, filter_options = []
           value={search_term}
           onChange={handle_search_change}
         />
-        {has_search_term && (
-          <button className="clear_btn" onClick={clear_search}>
-            ×
-          </button>
-        )}
       </div>
 
       {has_filter_options && (
@@ -59,7 +54,10 @@ function Search_filter({ on_search_change, on_filter_change, filter_options = []
           {is_filter_open && (
             <div className="filter_dropdown">
               <button 
-                className={`filter_option ${selected_filter === 'all' ? 'active' : ''}`}
+                className={['filter_option',
+                  selected_filter === 'all' && 'active',
+                  ].filter(Boolean).join(' ')}
+
                 onClick={() => handle_filter_change('all')}
               >
                 All

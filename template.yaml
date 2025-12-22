@@ -4,7 +4,7 @@ Description: Small Express app deployed with AWS SAM (Lambda + HTTP API)
 
 Globals:
   Function:
-    Runtime: nodejs22.x
+    Runtime: nodejs20.x
     Timeout: 20           # seconds
     MemorySize: 512
     Architectures:
@@ -29,7 +29,7 @@ Resources:
   ExpressFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: backend/
+      CodeUri: Backend/
       Handler: lambda.handler    # lambda.js exports.handler
       Description: Express app behind HTTP API
       Environment:
@@ -55,7 +55,6 @@ Resources:
   UploadsS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: wardrobe-tinder-uploads
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
@@ -65,7 +64,7 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*"
-            ExposeHeaders: []
+            ExposedHeaders: []
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
         BlockPublicPolicy: false
@@ -88,7 +87,6 @@ Resources:
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      AccessControl: Private
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
@@ -141,7 +139,8 @@ Resources:
         Origins:
           - Id: S3Origin
             DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
-            S3OriginConfig: {}     # required for S3 origins
+            S3OriginConfig:
+              OriginAccessIdentity: ''  # Empty for OAC
             OriginAccessControlId: !Ref CloudFrontOAC
 
         DefaultCacheBehavior:

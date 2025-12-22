@@ -3,14 +3,13 @@ import '../styles/components/add_item_modal.css';
 
 function Add_item_modal({ is_open, on_close }) {
   if (!is_open) {
-    return null;
-  }
+    return null;}
 
-  const handle_background_click = () => {
+  const handle_background_click = ()=> {
     on_close();
   };
 
-  const handle_content_click = (e) => {
+  const handle_content_click = (e)=>{
     e.stopPropagation();
   };
 

@@ -174,8 +174,7 @@
 }
 
 .save_outfit_btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.507);
 }
 
 .save_outfit_btn:active {

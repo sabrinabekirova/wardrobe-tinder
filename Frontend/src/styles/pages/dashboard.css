@@ -50,18 +50,16 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
+    border-radius: 5px;
     font-size: 16px;
     font-weight: 600;
     color: #fff;
     transition: all 0.3s ease;
-    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
 }
 
 .dashboard-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    /* box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); */
+    background: rgba(255, 255, 255, 0.516);
+    border-color: rgba(255, 255, 255, 0.796);
 }
 
 .dashboard-btn:active {

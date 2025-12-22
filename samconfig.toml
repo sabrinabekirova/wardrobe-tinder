@@ -1,12 +1,13 @@
 version = 0.1
 
 [default.deploy.parameters]
-stack_name = "halp-plz"
+stack_name = "static-website-dec22"
 resolve_s3 = true
-s3_prefix = "halp-plz"
+s3_prefix = "static-website-dec22"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
+disable_rollback = true
 
 [default.global.parameters]
 region = "us-west-2"

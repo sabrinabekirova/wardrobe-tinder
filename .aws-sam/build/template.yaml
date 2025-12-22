@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: Small Express app deployed with AWS SAM (Lambda + HTTP API)
 Globals:
   Function:
-    Runtime: nodejs22.x
+    Runtime: nodejs20.x
     Timeout: 20
     MemorySize: 512
     Architectures:
@@ -29,6 +29,14 @@ Resources:
       CodeUri: ExpressFunction
       Handler: lambda.handler
       Description: Express app behind HTTP API
+      Environment:
+        Variables:
+          AWS_S3_UPLOADS_BUCKET:
+            Ref: UploadsS3Bucket
+      Policies:
+      - S3CrudPolicy:
+          BucketName:
+            Ref: UploadsS3Bucket
       Events:
         Root:
           Type: HttpApi
@@ -46,10 +54,41 @@ Resources:
             Method: ANY
     Metadata:
       SamResourceId: ExpressFunction
+  UploadsS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+        - AllowedHeaders:
+          - '*'
+          AllowedMethods:
+          - GET
+          - HEAD
+          AllowedOrigins:
+          - '*'
+          ExposedHeaders: []
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+  UploadsS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: UploadsS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: PublicReadGetObject
+          Effect: Allow
+          Principal: '*'
+          Action: s3:GetObject
+          Resource:
+            Fn::Sub: ${UploadsS3Bucket.Arn}/*
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      AccessControl: Private
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
@@ -106,7 +145,8 @@ Resources:
             Fn::GetAtt:
             - StaticWebsiteBucket
             - RegionalDomainName
-          S3OriginConfig: {}
+          S3OriginConfig:
+            OriginAccessIdentity: ''
           OriginAccessControlId:
             Ref: CloudFrontOAC
         DefaultCacheBehavior:
@@ -141,3 +181,7 @@ Outputs:
     Description: Name of the static site bucket
     Value:
       Ref: StaticWebsiteBucket
+  UploadsBucketName:
+    Description: Name of the uploads bucket
+    Value:
+      Ref: UploadsS3Bucket

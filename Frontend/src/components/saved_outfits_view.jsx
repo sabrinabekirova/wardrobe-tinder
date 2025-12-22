@@ -77,7 +77,7 @@ function Saved_outfits_view({ outfits, on_delete }) {
         on_search_change={handle_search}
         on_filter_change={handle_filter}
         filter_options={filter_options}
-        placeholder="Search outfits..."
+        placeholder="Search your outfits!"
       />
       
       {has_no_filtered_outfits && (

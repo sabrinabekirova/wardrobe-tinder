@@ -35,7 +35,8 @@ function Wardrobe_view({ tops, bottoms, accessories, others, on_delete }) {
     { value: 'others', label: 'Others' }
   ];
 
-  const should_show_tops = (category_filter === 'all' || category_filter === 'tops');
+  //handles whats shown based on filter
+  const should_show_tops = (category_filter === 'all' || category_filter === 'tops'); 
   const should_show_bottoms = (category_filter === 'all' || category_filter === 'bottoms');
   const should_show_accessories = (category_filter === 'all' || category_filter === 'accessories');
   const should_show_others = (category_filter === 'all' || category_filter === 'others');
@@ -46,7 +47,7 @@ function Wardrobe_view({ tops, bottoms, accessories, others, on_delete }) {
         on_search_change={handle_search}
         on_filter_change={handle_filter}
         filter_options={filter_options}
-        placeholder="Search wardrobe..."
+        placeholder="Search your wardrobe!"
       />
       
       <div className="wardrobe-sections">

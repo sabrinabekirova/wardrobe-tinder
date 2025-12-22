@@ -3,16 +3,6 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import db from '../db.js';
 
 export function configurePassport() {
-  console.log('🔍 Configuring OAuth with credentials:');
-  console.log('Client ID:', process.env.GOOGLE_CLIENT_ID);
-  console.log('Client Secret:', process.env.GOOGLE_CLIENT_SECRET ? '***' + process.env.GOOGLE_CLIENT_SECRET.slice(-4) : 'NOT SET');
-  console.log('Callback URL:', process.env.GOOGLE_CALLBACK_URL);
-
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    console.error('❌ ERROR: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set in .env file');
-    throw new Error('Missing required OAuth environment variables');
-  }
-
   passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -20,25 +10,24 @@ export function configurePassport() {
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if user exists
-        const [users] = await db.query('SELECT * FROM users WHERE google_id = ?', [profile.id]);
+        const query_result = await db.query('SELECT * FROM users WHERE google_id = ?', [profile.id]);
+        const users = query_result[0];
         
         if (users.length > 0) {
-          // User exists, return user
           return done(null, users[0]);
         } else {
-          // Create new user
-          const [result] = await db.query(
-            'INSERT INTO users (google_id, email, name, profile_picture) VALUES (?, ?, ?, ?)',
-            [profile.id, profile.emails[0].value, profile.displayName, profile.photos[0]?.value]
+          const first_name = profile.displayName.split(' ')[0];
+          const insert_result = await db.query(
+            'INSERT INTO users (google_id, email, name) VALUES (?, ?, ?)',
+            [profile.id, profile.emails[0].value, first_name]
           );
+          const result = insert_result[0];
           
           const newUser = {
             id: result.insertId,
             google_id: profile.id,
             email: profile.emails[0].value,
-            name: profile.displayName,
-            profile_picture: profile.photos[0]?.value
+            name: profile.displayName
           };
           
           return done(null, newUser);
@@ -49,16 +38,19 @@ export function configurePassport() {
     }
   ));
 
-  // Serialize user for session
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
-  // Deserialize user from session
   passport.deserializeUser(async (id, done) => {
     try {
-      const [users] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
-      done(null, users[0]);
+      const query_result = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+      const users = query_result[0];
+      if (users && users.length > 0) {
+        done(null, users[0]);
+      } else {
+        done(null, false);
+      }
     } catch (error) {
       done(error, null);
     }

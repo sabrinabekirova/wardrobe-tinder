@@ -17,7 +17,6 @@
   text-align: center;
   margin: 0 0 32px 0;
 }
-
 .delete-message strong {
   color: #fff;
   font-weight: 600;
@@ -69,15 +68,4 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
-}
-
-@media (max-width: 480px) {
-  .modal-actions {
-    flex-direction: column;
-  }
-  
-  .btn-cancel,
-  .btn-delete {
-    width: 100%;
-  }
 }

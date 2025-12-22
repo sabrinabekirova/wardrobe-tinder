@@ -19,15 +19,15 @@ function Create_outfit_view({ tops, bottoms, accessories, others, on_save }) {
   };
 
   const prev_top = () => {
-    const new_index = top_index - 1;
+    const new_index = top_index-1;
     if (new_index < 0) {
-      set_top_index(tops.length - 1);
+      set_top_index(tops.length-1);
     } else {
       set_top_index(new_index);
     }
   };
 
-  const next_bottom = () => {
+  const next_bottom = () =>{
     const new_index = bottom_index + 1;
     if (new_index >= bottoms.length) {
       set_bottom_index(0);
@@ -99,10 +99,10 @@ function Create_outfit_view({ tops, bottoms, accessories, others, on_save }) {
       set_selected_categories(new_categories);
     }
   };
-
+//saves outfit
   const handle_save = () => {
     if (selected_categories.length < 2) {
-      alert('Please select at least 2 categories');
+      alert('Please select at least 2 categories'); //need at least 2 items to make an outfit
       return;
     }
 
@@ -111,6 +111,7 @@ function Create_outfit_view({ tops, bottoms, accessories, others, on_save }) {
       return;
     }
 
+    //outfit data
     let current_top = null;
     if (selected_categories.includes('top')) {
       current_top = tops[top_index];
@@ -155,7 +156,7 @@ function Create_outfit_view({ tops, bottoms, accessories, others, on_save }) {
       other_id: other_id
     });
 
-    set_outfit_name('');
+    set_outfit_name(''); //reset outfit name after saving
   };
 
   return (
