@@ -1,0 +1,124 @@
+.search_filter_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.search_box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search_input {
+  width: 100%;
+  padding: 10px 2.5rem 10px 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9px;
+  font-size: 14px;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.search_input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.search_input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.clear_btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s;
+}
+
+.clear_btn:hover {
+  color: #fff;
+}
+
+.filter_box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter_icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.filter_icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.filter_dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 10;
+  min-width: 150px;
+}
+
+.filter_option {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.filter_option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.filter_option.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 600px) {
+  .search_filter_container {
+    flex-direction: column;
+  }
+  
+  .search_box,
+  .filter_box {
+    width: 100%;
+  }
+  
+  .filter_dropdown {
+    right: 0;
+    left: auto;
+  }
+}

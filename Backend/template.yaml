@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Wardrobe Tinder Backend API (Lambda + API Gateway)
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 512
+    Architectures:
+      - x86_64
+
+Resources:
+  BackendHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - "*"
+        AllowCredentials: true
+
+  BackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: lambda.handler
+      Description: Wardrobe Tinder Express Backend
+      Environment:
+        Variables:
+          NODE_ENV: production
+          DB_HOST: !Ref DBHost
+          DB_USER: !Ref DBUser
+          DB_PASSWORD: !Ref DBPassword
+          DB_NAME: !Ref DBName
+          SESSION_SECRET: !Ref SessionSecret
+          GOOGLE_CLIENT_ID: !Ref GoogleClientId
+          GOOGLE_CLIENT_SECRET: !Ref GoogleClientSecret
+          GOOGLE_CALLBACK_URL: !Ref GoogleCallbackUrl
+          AWS_S3_BUCKET: !Ref S3BucketName
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref S3BucketName
+      Events:
+        Root:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BackendHttpApi
+            Path: /
+            Method: ANY
+        ProxyApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BackendHttpApi
+            Path: /{proxy+}
+            Method: ANY
+
+Parameters:
+  DBHost:
+    Type: String
+    Description: Database host endpoint
+  DBUser:
+    Type: String
+    Description: Database username
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: Database password
+  DBName:
+    Type: String
+    Description: Database name
+  SessionSecret:
+    Type: String
+    NoEcho: true
+    Description: Session secret key
+  GoogleClientId:
+    Type: String
+    Description: Google OAuth Client ID
+  GoogleClientSecret:
+    Type: String
+    NoEcho: true
+    Description: Google OAuth Client Secret
+  GoogleCallbackUrl:
+    Type: String
+    Description: Google OAuth callback URL (e.g., https://your-api-url.execute-api.us-west-2.amazonaws.com/auth/google/callback)
+  S3BucketName:
+    Type: String
+    Description: Existing S3 bucket name for uploads (or leave blank to skip S3 policy)
+    Default: ""
+
+Conditions:
+  HasS3Bucket: !Not [!Equals [!Ref S3BucketName, ""]]
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL for your backend
+    Value: !Sub "https://${BackendHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  FunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt BackendFunction.Arn

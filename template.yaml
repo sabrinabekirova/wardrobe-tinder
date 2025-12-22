@@ -29,10 +29,19 @@ Resources:
   ExpressFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
+      CodeUri: Backend/
       Handler: lambda.handler    # lambda.js exports.handler
       Description: Express app behind HTTP API
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref UploadsS3Bucket
       Events:
+        Root:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExpressHttpApi
+            Path: /
+            Method: ANY
         ProxyApi:
           Type: HttpApi
           Properties:
@@ -40,10 +49,123 @@ Resources:
             Path: /{proxy+}
             Method: ANY
 
+  UploadsS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins:
+              - "*"
+            ExposedHeaders: []
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  UploadsS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref UploadsS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${UploadsS3Bucket.Arn}/*"
+
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  StaticWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StaticWebsiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipalGetObject
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource:
+              !Join
+                - ''
+                - - !GetAtt StaticWebsiteBucket.Arn
+                  - '/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  CloudFrontOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-oac"
+        Description: Access control for S3 origin
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        HttpVersion: http2
+        PriceClass: PriceClass_100
+
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ''  # Empty for OAC
+            OriginAccessControlId: !Ref CloudFrontOAC
+
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          Compress: true
+          # Managed "CachingDisabled" policy (no caching: all TTLs = 0)
+          # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad         
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # AWS managed CORS-S3Origin
+
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
 Outputs:
   ApiBaseUrl:
     Description: Base URL for the Express HTTP API
     Value: !Sub "https://${ExpressHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
   ExpressFunctionArn:
     Description: ARN of the Lambda function running Express
-    Value: !GetAtt ExpressFunction.Arno
+    Value: !GetAtt ExpressFunction.Arn
+  CloudFrontDomainName:
+    Description: CloudFront distribution domain
+    Value: !GetAtt CloudFrontDistribution.DomainName
+  BucketName:
+    Description: Name of the static site bucket
+    Value: !Ref StaticWebsiteBucket
+  UploadsBucketName:
+    Description: Name of the uploads bucket
+    Value: !Ref UploadsS3Bucket
