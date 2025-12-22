@@ -32,6 +32,12 @@ Resources:
       CodeUri: backend/
       Handler: lambda.handler    # lambda.js exports.handler
       Description: Express app behind HTTP API
+      Environment:
+        Variables:
+          AWS_S3_UPLOADS_BUCKET: !Ref UploadsS3Bucket
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref UploadsS3Bucket
       Events:
         Root:
           Type: HttpApi
@@ -45,6 +51,39 @@ Resources:
             ApiId: !Ref ExpressHttpApi
             Path: /{proxy+}
             Method: ANY
+
+  UploadsS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: wardrobe-tinder-uploads
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins:
+              - "*"
+            ExposeHeaders: []
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  UploadsS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref UploadsS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${UploadsS3Bucket.Arn}/*"
 
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
@@ -131,3 +170,6 @@ Outputs:
   BucketName:
     Description: Name of the static site bucket
     Value: !Ref StaticWebsiteBucket
+  UploadsBucketName:
+    Description: Name of the uploads bucket
+    Value: !Ref UploadsS3Bucket

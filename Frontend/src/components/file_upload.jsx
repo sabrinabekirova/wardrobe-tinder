@@ -16,40 +16,60 @@ function FileUpload({ on_success }) {
 
   const handle_submit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted', { file, title, tag });
     
     if (!file || !title) {
       alert('Please select a file and enter a title');
       return;
     }
 
-    const form_data = new FormData();
-    form_data.append('file', file);
-    form_data.append('title', title);
-    form_data.append('tag', tag);
+    const reader = new FileReader();
+    
+    reader.onload = async () => {
+      try {
+        console.log('File read successfully');
+        const base64_image = reader.result;
+        
+        console.log('Sending request to server...');
+        const response = await fetch('http://localhost:3000/items', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image_url: base64_image,
+            title: title,
+            category: tag
+          }),
+          credentials: 'include'
+        });
 
-    try {
-      // Replace with your actual API endpoint
-      const response = await fetch('http://localhost:3000/api/upload', {
-        method: 'POST',
-        body: form_data,
-        credentials: 'include', // This sends cookies for session authentication
-      });
-
-      if (response.ok) {
-        alert('Item uploaded successfully!');
-        // Reset form
-        set_file(null);
-        set_title('');
-        set_tag('top');
-        set_preview(null);
-        if (on_success) on_success();
-      } else {
-        alert('Upload failed');
+        console.log('Response received:', response.status);
+        if (response.ok) {
+          alert('Item uploaded successfully!');
+          set_file(null);
+          set_title('');
+          set_tag('top');
+          set_preview(null);
+          if (on_success) on_success();
+        } else {
+          const data = await response.json();
+          console.error('Upload failed:', data);
+          alert('Upload failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error during upload:', error);
+        alert('Error uploading item: ' + error.message);
       }
-    } catch (error) {
-      console.error('Error uploading:', error);
-      alert('Error uploading item');
-    }
+    };
+    
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+      alert('Error reading file');
+    };
+    
+    console.log('Starting to read file...');
+    reader.readAsDataURL(file);
   };
 
   return (
