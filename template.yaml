@@ -32,9 +32,6 @@ Resources:
       CodeUri: Backend/
       Handler: lambda.handler    # lambda.js exports.handler
       Description: Express app behind HTTP API
-      Environment:
-        Variables:
-          AWS_S3_UPLOADS_BUCKET: !Ref UploadsS3Bucket
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref UploadsS3Bucket

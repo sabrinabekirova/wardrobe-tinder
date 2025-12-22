@@ -47,7 +47,6 @@ async function initializeDatabase() {
 // Initialize database on startup
 initializeDatabase();
 
-/* GET users listing. */
 router.get('/', async (req, res, next) => {
   try {
     const connection = await pool.getConnection();

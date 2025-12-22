@@ -29,10 +29,6 @@ Resources:
       CodeUri: ExpressFunction
       Handler: lambda.handler
       Description: Express app behind HTTP API
-      Environment:
-        Variables:
-          AWS_S3_UPLOADS_BUCKET:
-            Ref: UploadsS3Bucket
       Policies:
       - S3CrudPolicy:
           BucketName:
