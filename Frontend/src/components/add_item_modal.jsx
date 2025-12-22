@@ -2,7 +2,7 @@ import FileUpload from './file_upload';
 import '../styles/components/add_item_modal.css';
 
 function Add_item_modal({ is_open, on_close }) {
-  if (is_open === false) {
+  if (!is_open) {
     return null;
   }
 
